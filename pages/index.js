@@ -34,6 +34,7 @@ export async function getStaticProps(){
   return{
     props: {
       recpies:res.items,
-    }
+    },
+    revalidate: 5
   }
 }

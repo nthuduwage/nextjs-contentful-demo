@@ -63,5 +63,6 @@ export const getStaticProps = async (context) => {
     props: {
       recipe: res,
     },
+    revalidate: 10
   };
 };
