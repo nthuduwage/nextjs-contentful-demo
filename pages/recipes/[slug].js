@@ -1,6 +1,7 @@
 import { createClient } from "contentful";
 import Image from "next/image";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { FallbackSkeliton } from "../../components/FallbackSkeliton";
 
 const client = createClient({
   space: process.env.CONTENTFUL_SPACE_ID,
@@ -8,6 +9,12 @@ const client = createClient({
 });
 
 export default function RecipeDetails({ recipe }) {
+
+    //fallback handle
+    if(!recipe){
+      return <FallbackSkeliton/>;
+    }
+
   console.log(recipe.items[0].fields);
   const { title, featuredImage, ingredients, cookingTime, method } =
     recipe.items[0].fields;
@@ -48,16 +55,27 @@ export const getStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false,
+    fallback: true, //true, false, 'blocking'
   };
 };
 
 export const getStaticProps = async (context) => {
+
   const { slug } = context.params;
   const res = await client.getEntries({
     content_type: "recpie",
     "fields.slug": slug,
   });
+
+
+  if(!res.items.length){
+    return {
+      redirect: {
+        destination:'/',
+        permanent: false, // In future there might  be a slug fot this unknown slug
+      }
+    }
+  }
 
   return {
     props: {
